@@ -3,4 +3,14 @@
     Author     : Peter Nagy
     Description: Styleing for index.html & game.html 
 */
+//basline reset >> margin padding
+body {
+  margin: 0;
+  padding: 0;
+}
+.bodygame {
+  margin: 0;
+  padding: 0;
+}
+#gamecanvas{background: black;}
 

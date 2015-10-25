@@ -4,14 +4,23 @@
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+        <link rel="stylesheet" type="text/css" href="./style/main.css" />
     </head>
-    <body>
-        <canvas id="canvas" width="500" height="500"></canvas>
+    <body class="bodygame">
+        <canvas id="gamecanvas"></canvas>
         
-        <script src="/js/libs/ocanvas/ocanvas.min.js"></script>
+        <script src="./js/objects/rectangle.js"></script>
         <script type="text/javascript">
+            //Init cavas
+            var canvas = document.getElementById('gamecanvas');
+            var ctx = canvas.getContext('2d');
             
+            //resize to fit window
+            ctx.canvas.width  = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+            
+            var brick = new Rectangle(ctx, 15, 35, 10, 10, "yellow");
+            brick.draw();
         </script>
     </body>
 </html>
