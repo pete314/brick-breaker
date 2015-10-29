@@ -10,8 +10,8 @@ function Ball(ctx, xPos, yPos, vx, vy, color, radius) {
     this.ctx = ctx;
     this.xPos = xPos;
     this.yPos = yPos;
-    this.vx = 2;//vx;
-    this.vy = 2;//vy;
+    this.vx = 10;//vx;
+    this.vy = 10;//vy;
     this.color = color;
     this.radius = radius;
     
@@ -21,6 +21,14 @@ function Ball(ctx, xPos, yPos, vx, vy, color, radius) {
         this.ctx.arc(this.xPos, this.yPos, this.radius, 0, this.radius * Math.PI, false);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
+    }
+    
+    this.changeVx = function(){
+        this.vx *= -1;
+    }
+    
+    this.get = function(){
+        return this;
     }
     
     //update the this position use dwith frame animation
