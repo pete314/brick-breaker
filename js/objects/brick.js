@@ -23,111 +23,74 @@ function Brick(ctx, height, width, xPos, yPos, color, id){
         //ctx.lineWidth = 7;
         //ctx.strokeStyle = 'black';
         ctx.stroke();
-    }
+    };
     
     this.setColor = function(color){
         console.log(color);
         this.color = color;
-    }
+    };
+    
+    this.getBrickXpos = function(){
+        return this.xPos;
+    };
+    
+    this.getBrickYpos = function(){
+        return this.yPos;
+    };
+    
 }
 
 //holding the bricks as an object
-function Bricks(){
-    this.bricks = Array();
+function Bricks(ctx){
+    this.ctx = ctx;
+    this.bricks = [];
     
     this.init = function(){
         var brick_id_cnt = 0;
+        var brick_skip_cnt = 0;
         //constants
-        var BRICK_CONSTANTS = {width: 65, height: 20, gap: 10};
+        var BRICK_CONSTANTS = {width: 65, height: 65, gap: 10, min_skip: 1, max_skip: 8};
 
         //calculate bricks per row based on dinamic width (remove 10pc margin both sides)
-        var column_cnt =  Math.floor((window.innerWidth - 20) / (BRICK_CONSTANTS.width + (BRICK_CONSTANTS.gap / 2)));
+        var column_cnt =  Math.floor((this.ctx.canvas.width - 20) / (BRICK_CONSTANTS.width + (BRICK_CONSTANTS.gap / 2)));
         
+        var bricksToSkip = this.getRandomNumToSkip(BRICK_CONSTANTS.min_skip, BRICK_CONSTANTS.max_skip);
         //var bricks = Array();
         for(var y = 0; y < 5; y++){
             for(var i = 0; i < column_cnt; i++){
-                brick_id_cnt += 1;
-                var brick = new Brick(
-                    ctx, 
-                    BRICK_CONSTANTS.height,
-                    BRICK_CONSTANTS.width,
-                    y == 0 ? 0 : y * (BRICK_CONSTANTS.height + (BRICK_CONSTANTS.gap /2)),
-                    i == 0 ? 0 : i * (BRICK_CONSTANTS.width + (BRICK_CONSTANTS.gap /2)),
-                    "yellow",
-                    brick_id_cnt
-                );
-                brick.draw();
-                this.bricks.push(brick);
+                if(bricksToSkip === brick_skip_cnt){
+                    var brick = new Brick(
+                        ctx, 
+                        BRICK_CONSTANTS.height,
+                        BRICK_CONSTANTS.width,
+                        y === 0 ? 0 : y * (BRICK_CONSTANTS.height + (BRICK_CONSTANTS.gap /2)),
+                        i === 0 ? 0 : i * (BRICK_CONSTANTS.width + (BRICK_CONSTANTS.gap /2)),
+                        "yellow",
+                        brick_id_cnt
+                    );
+                    brick.draw();
+                    this.bricks[brick_id_cnt] = brick;
+                    brick_id_cnt += 1;
+                    brick_skip_cnt = 0;
+                    bricksToSkip = this.getRandomNumToSkip(BRICK_CONSTANTS.min_skip, BRICK_CONSTANTS.max_skip);
+                }else{
+                    brick_skip_cnt +=1;
+                }
             }
         }
-    }
+        console.log("number of bricks " + brick_id_cnt);
+        return this.bricks;
+    };
     
-    this.redrawBricks = function(){
-        for(var key in this.bricks){
-            //var brick = this.bricks[key];
-            //brick.draw();
-            this.bricks[key].draw();
+    this.redrawBricks = function(bricks){
+        this.bricks = bricks;
+        for(var i = 0; i < this.bricks.length; i++){
+            this.bricks[i].draw();
         }
         return true;
-    }
+    };
     
-    this.checkAllColliding = function(ball){
-        //check all bricks
-        for(var key in this.bricks){
-            //var brick =this.bricks[key];
-            //should check if a brick was cilliding already
-            
-            var doesCollide = this.checkColliding(ball, this.bricks[key]);
-            if(doesCollide){
-                ball.changeVx();
-                this.bricks[key].setColor("red");
-            }
-        }
-        return ball;
-    }
-    
-    // return false if not colliding
-    this.checkColliding = function(ball, brick){
-        var distX = Math.abs(ball.xPos - brick.xPos - brick.width / 2);
-        var distY = Math.abs(ball.yPos - brick.yPos - brick.height / 2);
-       
-        if(distX > (brick.width/2 + ball.radius))
-        {
-            return false;
-        }
-        if(distY > (brick.height/2 + ball.radius))
-        {
-            return false;
-        }
-        if(distX <= (brick.width/2))
-        {
-            return true;
-        }
-        if(distY <= (brick.height/2))
-        {
-            return true;
-        }
-        
-        console.log(brick, ball);
-       
-        var dx = distX - brick.width / 2;
-        var dy = distY - brick.height / 2;
-        return(dx*dx+dy*dy <= (ball.radius*ball.radius));
-        /*
-        var distX = Math.abs(ball.xPos - brick.xPos - (brick.width / 2));
-        var distY = Math.abs(ball.yPos - brick.yPos - (brick.height / 2));
-
-        if (distX > (brick.width/2 + ball.radius)) { return false; }
-        if (distY > (brick.height/2 + ball.radius)) { return false; }
-
-        if (distX <= (brick.width/2)) { return true; } 
-        if (distY <= (brick.height/2)) { return true; }
-        
-        console.log(brick, ball);
-
-        var dx=distX-brick.width/2;
-        var dy=distY-brick.height/2;
-        return (dx*dx+dy*dy<=(ball.radius*ball.radius));   
-        */
-    }
+    this.getRandomNumToSkip = function(min, max){
+        return Math.floor(Math.random() * (max - min +1 )) + min;
+    };
 }

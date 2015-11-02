@@ -17,49 +17,108 @@
             var ctx = canvas.getContext('2d');
             
             //resize to fit window
-            ctx.canvas.width  = window.innerWidth;
-            ctx.canvas.height = window.innerHeight;
+            ctx.canvas.width  = 550;//window.innerWidth;
+            ctx.canvas.height = 768;//window.innerHeight;
             
-            var bricks = new Bricks();
-            bricks.init();
-            var ball = new Ball(ctx, 150, 150, 10, 10, "red", 10);
+            var bricks = new Bricks(ctx);
+            var brickArray = bricks.init();
+            var ball = new Ball(ctx, 250, 450, 10, 10, "red", 10);
             ball.draw();
             
-            /*
+            var checkAllColliding = function(ball, bricks){
+                //check all bricks
+                for(var i = 0; i < bricks.length; i++){
+                    var doesCollide = this.checkColliding(ball, bricks[i]);
+                    if(doesCollide === true){
+                        
+                        console.log(ball, bricks[i]);
+                        ball.changeVx();
+                        bricks[i].setColor("red");
+                    }
+                }
+                return bricks;
+            };
+
+            // return false if not colliding
+            var checkColliding = function(ball, currentBrick){
+                /* dx and dy are the vertical and horizontal distances between
+                    * the circle centers.
+                    */
+                   dx = ball.getXpos() - currentBrick.getBrickXpos();
+                   dy = ball.getYpos() - currentBrick.getBrickYpos();
+
+                   /* Determine the straight-line distance between the centers. */
+                   d = Math.sqrt((dy*dy) + (dx*dx));
+
+                   /* Check for solvability. */
+                   if (d > (ball.Ballradius + currentBrick.width)) {
+                       /* no solution. circles do not intersect. */
+                       return false;
+                   }
+                   if (d < Math.abs(ball.Ballradius - currentBrick.width)) {
+                       /* no solution. one circle is contained in the other */
+                       return false;
+                   }
+                   return true;
+                /*
+                var distX = Math.abs(ball.getXpos() - brick.getBrickXpos() - (brick.width / 2));
+                var distY = Math.abs(ball.getYpos() - brick.getBrickYpos() - (brick.height / 2));
+
+                if(distX > (brick.width/2 + ball.Ballradius))
+                {
+                    return false;
+                }
+                if(distY > (brick.height/2 + ball.Ballradius))
+                {
+                    return false;
+                }
+                if(distX <= (brick.width/2))
+                {
+                    return true;
+                }
+                if(distY <= (brick.height/2))
+                {
+                    return true;
+                }
+
+                var dx = distX - brick.width / 2;
+                var dy = distY - brick.height / 2;
+                return(dx*dx+dy*dy <= (ball.Ballradius*ball.Ballradius));
+                */
+            };
+
+
             step();
             function step(){
               ctx.clearRect(0, 0, canvas.width, canvas.height);
-              var collisions_checked = bricks.checkAllColliding(ball);
-              var bricks_redrown = bricks.redrawBricks();
+              brickArray = checkAllColliding(ball, brickArray);
+              bricks.redrawBricks(brickArray);
               ball.update();
-              if(collisions_checked == true && bricks_redrown == true){
-                requestAnimationFrame(step);
-              }                
+              requestAnimationFrame(step);
             }
-            */
             
             
-            // shim layer with setTimeout fallback
-            window.requestAnimFrame = (function(){
-              return  window.requestAnimationFrame       ||
-                      window.webkitRequestAnimationFrame ||
-                      window.mozRequestAnimationFrame    ||
-                      function( callback ){
-                        window.setTimeout(callback, 1000 / 60);
-                      };
-            })();
-
-            (function animloop(){
-              requestAnimFrame(animloop);
-              render();
-            })();
-            
-            function render(){
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ball = bricks.checkAllColliding(ball);
-                var bricks_redrown = bricks.redrawBricks();
-                ball.update();
-            }
+//            // shim layer with setTimeout fallback
+//            window.requestAnimFrame = (function(){
+//              return  window.requestAnimationFrame       ||
+//                      window.webkitRequestAnimationFrame ||
+//                      window.mozRequestAnimationFrame    ||
+//                      function( callback ){
+//                        window.setTimeout(callback, 1000 / 60);
+//                      };
+//            })();
+//
+//            (function animloop(){
+//              requestAnimFrame(animloop);
+//              render();
+//            })();
+//            
+//            function render(){
+//                ctx.clearRect(0, 0, canvas.width, canvas.height);
+//                ball = bricks.checkAllColliding(ball);
+//                var bricks_redrown = bricks.redrawBricks();
+//                ball.update();
+//            }
             
         </script>
     </body>
