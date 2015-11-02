@@ -16,108 +16,177 @@
             var canvas = document.getElementById('gamecanvas');
             var ctx = canvas.getContext('2d');
             
-            //resize to fit window
             ctx.canvas.width  = 550;//window.innerWidth;
             ctx.canvas.height = 768;//window.innerHeight;
             
-            var bricks = new Bricks(ctx);
-            var brickArray = bricks.init();
+            var brickArray = [];
             var ball = new Ball(ctx, 250, 450, 10, 10, "red", 10);
-            ball.draw();
-            
-            var checkAllColliding = function(ball, bricks){
-                //check all bricks
-                for(var i = 0; i < bricks.length; i++){
-                    var doesCollide = this.checkColliding(ball, bricks[i]);
-                    if(doesCollide === true){
-                        
-                        console.log(ball, bricks[i]);
-                        ball.changeVx();
-                        bricks[i].setColor("red");
+            ball.drawBall();
+
+            function initBricks(){
+                var brick_id_cnt = 0;
+                var brick_skip_cnt = 0;
+                //constants
+                var BRICK_CONSTANTS = {width: 65, height: 65, gap: 10, min_skip: 1, max_skip: 8};
+
+                //calculate bricks per row based on dinamic width (remove 10pc margin both sides)
+                var column_cnt =  Math.floor((this.ctx.canvas.width - 20) / (BRICK_CONSTANTS.width + (BRICK_CONSTANTS.gap / 2)));
+
+                var bricksToSkip = getRandomNumToSkip(BRICK_CONSTANTS.min_skip, BRICK_CONSTANTS.max_skip);
+                //var bricks = Array();
+                for(var y = 0; y < 5; y++){
+                    for(var i = 0; i < column_cnt; i++){
+                        if(bricksToSkip === brick_skip_cnt){
+                            var brick = new Brick(
+                                ctx, 
+                                BRICK_CONSTANTS.height,
+                                BRICK_CONSTANTS.width,
+                                y === 0 ? 0 : y * (BRICK_CONSTANTS.height + (BRICK_CONSTANTS.gap /2)),
+                                i === 0 ? 0 : i * (BRICK_CONSTANTS.width + (BRICK_CONSTANTS.gap /2)),
+                                "yellow",
+                                brick_id_cnt
+                            );
+                            brick.drawBrick();
+                            brickArray[brick_id_cnt] = brick;
+                            brick_id_cnt += 1;
+                            brick_skip_cnt = 0;
+                            bricksToSkip = getRandomNumToSkip(BRICK_CONSTANTS.min_skip, BRICK_CONSTANTS.max_skip);
+                        }else{
+                            brick_skip_cnt +=1;
+                        }
                     }
                 }
-                return bricks;
+                console.log("number of bricks " + brick_id_cnt);
+            }
+
+            function getRandomNumToSkip(min, max){
+                return Math.floor(Math.random() * (max - min +1 )) + min;
             };
-
-            // return false if not colliding
-            var checkColliding = function(ball, currentBrick){
-                /* dx and dy are the vertical and horizontal distances between
-                    * the circle centers.
-                    */
-                   dx = ball.getXpos() - currentBrick.getBrickXpos();
-                   dy = ball.getYpos() - currentBrick.getBrickYpos();
-
-                   /* Determine the straight-line distance between the centers. */
-                   d = Math.sqrt((dy*dy) + (dx*dx));
-
-                   /* Check for solvability. */
-                   if (d > (ball.Ballradius + currentBrick.width)) {
-                       /* no solution. circles do not intersect. */
-                       return false;
-                   }
-                   if (d < Math.abs(ball.Ballradius - currentBrick.width)) {
-                       /* no solution. one circle is contained in the other */
-                       return false;
-                   }
-                   return true;
-                /*
-                var distX = Math.abs(ball.getXpos() - brick.getBrickXpos() - (brick.width / 2));
-                var distY = Math.abs(ball.getYpos() - brick.getBrickYpos() - (brick.height / 2));
-
-                if(distX > (brick.width/2 + ball.Ballradius))
-                {
-                    return false;
+            
+            function animateBall()
+            {
+                ctx.fillStyle = "black";  
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for(var i = 0; i < brickArray.length; i++){
+                    var doesCollide = brickArray[i].checkColliding(ball, brickArray[i]);
+                    
+                    if(!doesCollide){
+                        brickArray[i].drawBrick();
+                    }else{
+                        break;
+                    }
                 }
-                if(distY > (brick.height/2 + ball.Ballradius))
-                {
-                    return false;
-                }
-                if(distX <= (brick.width/2))
-                {
-                    return true;
-                }
-                if(distY <= (brick.height/2))
-                {
-                    return true;
-                }
-
-                var dx = distX - brick.width / 2;
-                var dy = distY - brick.height / 2;
-                return(dx*dx+dy*dy <= (ball.Ballradius*ball.Ballradius));
-                */
-            };
-
-
-            step();
-            function step(){
-              ctx.clearRect(0, 0, canvas.width, canvas.height);
-              brickArray = checkAllColliding(ball, brickArray);
-              bricks.redrawBricks(brickArray);
-              ball.update();
-              requestAnimationFrame(step);
+                ball = ball.updateBall();
+                ball.drawBall();
+                ctx = ball.getCtx();
+                //requestAnimationFrame(animateBall);
             }
             
+            initBricks();
+            setInterval(animateBall, 10);
             
-//            // shim layer with setTimeout fallback
-//            window.requestAnimFrame = (function(){
-//              return  window.requestAnimationFrame       ||
-//                      window.webkitRequestAnimationFrame ||
-//                      window.mozRequestAnimationFrame    ||
-//                      function( callback ){
-//                        window.setTimeout(callback, 1000 / 60);
-//                      };
-//            })();
-//
-//            (function animloop(){
-//              requestAnimFrame(animloop);
-//              render();
-//            })();
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            //resize to fit window
+//            ctx.canvas.width  = 550;//window.innerWidth;
+//            ctx.canvas.height = 768;//window.innerHeight;
 //            
-//            function render(){
-//                ctx.clearRect(0, 0, canvas.width, canvas.height);
-//                ball = bricks.checkAllColliding(ball);
-//                var bricks_redrown = bricks.redrawBricks();
-//                ball.update();
+//            var bricks = new Bricks(ctx);
+//            var brickArray = [];
+//            brickArray = bricks.initBricks();
+//            var ball = new Ball(ctx, 250, 450, 10, 10, "red", 10);
+//            ball.draw();
+//            
+//            
+//            
+//            var checkAllColliding = function(ball){
+//                //check all bricks
+//                for(i = 0; i < brickArray.length; i++){
+//                    var doesCollide = this.checkColliding(ball, brickArray[i]);
+//                    if(doesCollide === true){
+//                        console.log(ball, brickArray[i]);
+//                        ball.changeVx();
+//                        brickArray[i].setColor("red");
+//                        break;
+//                    }
+//                }
+//            };
+//
+//            // return false if not colliding
+//            var checkColliding = function(ball, currentBrick){
+//                   if(ball.getXpos() - currentBrick.getBrickXpos() < ball.Ballradius + currentBrick.width){
+//                       return true;
+//                   }
+//                   if(ball.getYpos() - currentBrick.getBrickYpos() < ball.Ballradius + currentBrick.width){
+//                       return true;
+//                   }
+//                   
+//                   return false;
+////                   dx = ball.getXpos() - currentBrick.getBrickXpos();
+////                   dy = ball.getYpos() - currentBrick.getBrickYpos();
+////
+////                   /* Determine the straight-line distance between the centers. */
+////                   d = Math.sqrt((dy*dy) + (dx*dx));
+////
+////                   /* Check for solvability. */
+////                   if (d > (ball.Ballradius + currentBrick.width)) {
+////                       /* no solution. circles do not intersect. */
+////                       return false;
+////                   }
+////                   if (d < Math.abs(ball.Ballradius - currentBrick.height)) {
+////                       /* no solution. one circle is contained in the other */
+////                       return false;
+////                   }
+////                   return true;
+//                
+//                   
+//            };
+//
+//            var redrawBricks = function(){
+//                for(i = 0; i < brickArray.length; i++){
+//                    brickArray[i].draw();
+//                }
+//            };
+//            step();
+//            function step(){
+//              ctx.clearRect(0, 0, canvas.width, canvas.height);
+//              checkAllColliding(ball);
+//              redrawBricks();
+//              ball = ball.update();
+//              requestAnimationFrame(step);
 //            }
             
         </script>

@@ -4,6 +4,70 @@
     Description: Brick && Bricks object
 */
 
+"use strict";
+
+class Brick
+{
+    constructor(ctx, height, width, xPos, yPos, color, id){
+        this.ctx = ctx;
+        this.height = height;
+        this.width = width;
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.color = color;
+        this.id = id;
+        this.isHit = false;
+    }
+    
+    drawBrick(){
+        ctx.beginPath();
+        ctx.rect(this.yPos, this.xPos, this.width, this.height);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.stroke();
+    }
+    
+    checkColliding(ball, currentBrick){
+        if(currentBrick.isHit){
+            return false;
+        }
+        
+        var isColliding = false;
+        var distX = Math.abs(ball.BallxPos - currentBrick.xPos - currentBrick.width / 2);
+        var distY = Math.abs(ball.BallyPos - currentBrick.yPos - currentBrick.height / 2);
+        
+        if(distX > (currentBrick.width/2 + ball.Ballradius))
+        {
+            isColliding = false;
+        }
+        if(distY > (currentBrick.height/2 + ball.Ballradius)){
+            isColliding = false;
+        }
+        if(distX <= (currentBrick.width/2))
+        {
+            isColliding = true;
+        }
+        if(distY <= (currentBrick.height/2))
+        {
+           isColliding = true;
+        }
+        
+        var dx = distX - currentBrick.width / 2;
+        var dy = distY - currentBrick.height / 2;
+        isColliding = (dx*dx+dy*dy <= (ball.Ballradius*ball.Ballradius));
+        
+        if(isColliding){
+            console.log(ball, currentBrick);
+            currentBrick.color = "black";
+            currentBrick.isHit = true;
+            ball.cx *= -1;
+        }
+        
+        return isColliding;
+    }
+}
+
+/*
 'use strict';
 
 function Brick(ctx, height, width, xPos, yPos, color, id){
@@ -20,8 +84,6 @@ function Brick(ctx, height, width, xPos, yPos, color, id){
         ctx.rect(yPos, xPos, width, height);
         ctx.fillStyle = this.color;
         ctx.fill();
-        //ctx.lineWidth = 7;
-        //ctx.strokeStyle = 'black';
         ctx.stroke();
     };
     
@@ -38,14 +100,14 @@ function Brick(ctx, height, width, xPos, yPos, color, id){
         return this.yPos;
     };
     
+    
 }
 
-//holding the bricks as an object
 function Bricks(ctx){
     this.ctx = ctx;
-    this.bricks = [];
     
-    this.init = function(){
+    this.initBricks = function(){
+        var bricks = [];
         var brick_id_cnt = 0;
         var brick_skip_cnt = 0;
         //constants
@@ -60,7 +122,7 @@ function Bricks(ctx){
             for(var i = 0; i < column_cnt; i++){
                 if(bricksToSkip === brick_skip_cnt){
                     var brick = new Brick(
-                        ctx, 
+                        this.ctx, 
                         BRICK_CONSTANTS.height,
                         BRICK_CONSTANTS.width,
                         y === 0 ? 0 : y * (BRICK_CONSTANTS.height + (BRICK_CONSTANTS.gap /2)),
@@ -69,7 +131,7 @@ function Bricks(ctx){
                         brick_id_cnt
                     );
                     brick.draw();
-                    this.bricks[brick_id_cnt] = brick;
+                    bricks[brick_id_cnt] = brick;
                     brick_id_cnt += 1;
                     brick_skip_cnt = 0;
                     bricksToSkip = this.getRandomNumToSkip(BRICK_CONSTANTS.min_skip, BRICK_CONSTANTS.max_skip);
@@ -79,18 +141,11 @@ function Bricks(ctx){
             }
         }
         console.log("number of bricks " + brick_id_cnt);
-        return this.bricks;
-    };
-    
-    this.redrawBricks = function(bricks){
-        this.bricks = bricks;
-        for(var i = 0; i < this.bricks.length; i++){
-            this.bricks[i].draw();
-        }
-        return true;
+        return bricks;
     };
     
     this.getRandomNumToSkip = function(min, max){
         return Math.floor(Math.random() * (max - min +1 )) + min;
     };
 }
+*/
