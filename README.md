@@ -6,11 +6,9 @@ BrickBreaker - the simple game - HTML, JavaScript
 -------------------------------------------------
 The game in action:
 
-![Game over](https://raw.githubusercontent.com/pete314/brick-breaker/master/img/game_over.PNG)
+![Game play](https://raw.githubusercontent.com/pete314/brick-breaker/master/img/in_game.PNG)
 
 ![Game paused](https://github.com/pete314/brick-breaker/blob/master/img/game_paused.PNG)
-
-![Game play](https://raw.githubusercontent.com/pete314/brick-breaker/master/img/in_game.PNG)
 
 
 -------------------------------------------------
