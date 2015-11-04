@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Brick breaker game</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="./style/main.css" />
@@ -42,7 +42,7 @@
             
             //Score variables
             var score = 0;
-            var lives = 1;
+            var lives = 3;
             var level = 1;
             var bricks = [];
             
@@ -52,19 +52,32 @@
                         (function(){
                             ctx.canvas.width = window.innerWidth-50;
                             ctx.canvas.height = window.innerHeight-50;
+                            currentColumnNums = window.innerWidth-30 < 640 ? 9 : window.innerWidth-30 < 1024 ? 15 : 20;
                         }), false);
             
             //Game functions from here
             
             //generate all the bricks
-            for(c=0; c<BRICK_CONSTANTS.columnCount; c++) {
-                bricks[c] = [];
-                for(r=0; r<BRICK_CONSTANTS.rowCount; r++) {
-                    bricks[c][r] = { x: 0, y: 0, status: 1 };
+            function initBricks(){   
+                for(c=0; c<BRICK_CONSTANTS.columnCount; c++) {
+                    bricks[c] = [];
+                    for(r=0; r<BRICK_CONSTANTS.rowCount; r++) {
+                        bricks[c][r] = { x: 0, y: 0, status: 1 };
+                    }
                 }
+            }
+            initBricks();
+            
+            function drawBrick(xPos, yPos, color){
+                ctx.beginPath();
+                ctx.rect(xPos, yPos, BRICK_CONSTANTS.width, BRICK_CONSTANTS.height);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.closePath();
             }
             
             function drawBricks() {
+                var colors = ["#FF0066", "#66FF33", "#FF6600", "#00CC99", "#3333FF"];
                 for(c=0; c<BRICK_CONSTANTS.columnCount; c++) {
                     for(r=0; r<BRICK_CONSTANTS.rowCount; r++) {
                         if(bricks[c][r].status == 1) {
@@ -72,11 +85,8 @@
                             var brickY = (c*(BRICK_CONSTANTS.height+BRICK_CONSTANTS.padding))+BRICK_CONSTANTS.offsetTop;
                             bricks[c][r].x = brickX;
                             bricks[c][r].y = brickY;
-                            ctx.beginPath();
-                            ctx.rect(brickX, brickY, BRICK_CONSTANTS.width, BRICK_CONSTANTS.height);
-                            ctx.fillStyle = "#0095DD";
-                            ctx.fill();
-                            ctx.closePath();
+                            
+                            drawBrick(brickX, brickY, colors[c%5]);
                         }
                     }
                 }
@@ -91,6 +101,13 @@
                 ctx.closePath();
             }
             
+            function goTonextLevel(){
+                level += 1;
+                lives +=3;
+                BRICK_CONSTANTS.columnCount = level * 2 > 12 ? 12 : level === 2 ? level * 2.5 : level * 2;
+                initBricks();
+            }
+            
             //Brick-ball collisison detection
             function brickCollisionDetection() {
                 for(c=0; c<BRICK_CONSTANTS.columnCount; c++) {
@@ -102,8 +119,8 @@
                                 b.status = 0;
                                 score++;
                                 if(score == BRICK_CONSTANTS.rowCount*BRICK_CONSTANTS.columnCount) {
-                                    alert("YOU WIN, CONGRATS!");
-                                    document.location.reload();
+                                    goTonextLevel();
+                                    //document.location.reload();
                                 }
                             }
                         }
@@ -159,7 +176,7 @@
                           $( this ).dialog( "close" );
                           document.location.reload();
                         },
-                        Cancel: function() {
+                        "Back to index": function() {
                           $( this ).dialog( "close" );
                           window.open("index.html","_self");
                         }
@@ -260,8 +277,6 @@
                 requestAnimationFrame(draw);
             }
             draw();
-            
-              
             
         </script>
     </body>
