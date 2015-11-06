@@ -1,20 +1,17 @@
-**
 
 BrickBreaker - the simple game - HTML, JavaScript
 -------------------------------------------------
 
-**
 
-----------
+-------------------------------------------------
 The game in action:
-![Game over](https://drive.google.com/file/d/0B31npoE6CRlSSWFGc2NuRXk4Yms/view?usp=sharing)
 
-![Game paused](https://drive.google.com/file/d/0B31npoE6CRlSbU5RWmMxTjdvYUk/view?usp=sharing)
+![Game play](https://raw.githubusercontent.com/pete314/brick-breaker/master/img/in_game.PNG)
 
-![Game play](https://drive.google.com/file/d/0B31npoE6CRlSUkdLeUhQWnVxS0E/view?usp=sharing)
+![Game paused](https://github.com/pete314/brick-breaker/blob/master/img/game_paused.PNG)
 
 
-----------
+-------------------------------------------------
 
 The Game features:
 
