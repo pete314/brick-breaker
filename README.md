@@ -1,5 +1,5 @@
 
-BrickBreaker - the simple game - HTML, JavaScript
+BrickBreaker - simple HTML, JavaScript game
 -------------------------------------------------
 
 
